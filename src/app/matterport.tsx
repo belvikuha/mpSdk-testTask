@@ -113,7 +113,7 @@ export default function MatterportPage() {
 
   async function moveByPath(path) {
     const modelData = await mpSdk.Model.getData();
-    for (let i = 0; i < path.length; i++) {
+    for (let i = 1; i < path.length; i++) {
       const vertex = path[i];
       const sweepId = vertex.id;
 
@@ -123,7 +123,8 @@ export default function MatterportPage() {
         if (!sweep) {
           throw new Error(`Sweep c ID ${sweepId} не найден!`);
         }
-        const {x: x2, y: y2} = sweep.position;
+        const {x: x2, y: y2, z: z2} = sweep.position;
+        console.log(" sweep.position:>> ", sweep.position);
 
         await mpSdk.Sweep.moveTo(sweepId, {
           transition: mpSdk.Sweep.Transition.FLY,
@@ -131,7 +132,7 @@ export default function MatterportPage() {
         });
 
         /// поворот камеры
-        if (i !== 0 && i !== path.length - 1) {
+        if (i !== path.length - 1) {
           const prevSweep = modelData.sweeps.find(sw => sw.sid === path?.[i - 1]?.id);
           const futureSweep = modelData.sweeps.find(sw => sw.sid === path?.[i + 1]?.id);
 
@@ -139,14 +140,20 @@ export default function MatterportPage() {
             throw new Error(`Sweep c ID ${sweepId} не найден!`);
           }
 
-          const {x: x1, y: y1} = prevSweep.position;
-          const {x: x3, y: y3} = futureSweep.position;
+          const {x: x1, y: y1, z: z1} = prevSweep.position;
+          const {x: x3, y: y3, z: z3} = futureSweep.position;
 
-          let vector1 = {x1: x1, y1: y1, x2: x2, y2: y2}; //AB
-          let vector2 = {x1: x2, y1: y2, x2: x3, y2: y3}; //BC
+          let vector1 = {x1: x1, y1: z1, x2: x2, y2: z2}; //AB
+          let vector2 = {x1: x2, y1: z2, x2: x3, y2: z3}; //BC
           const rotateAngle = angleBetweenVectors(vector1, vector2);
+          // console.log("rotateAngle :>> ", rotateAngle);
 
-          await mpSdk.Camera.rotate(rotateAngle, 0, {speed: 50});
+          if (rotateAngle >= 10) {
+            const rotateDirection = z3 > z1 ? -rotateAngle : rotateAngle;
+            // console.log("rotateDirection :>> ", rotateDirection);
+
+            await mpSdk.Camera.rotate(rotateDirection, 0, {speed: 50});
+          }
         }
       } catch (moveErr) {
         console.error("Ошибка перемещения камеры к свипу:", moveErr);
