@@ -158,7 +158,7 @@ export default function MatterportPage() {
           const rotateAngle = angleBetweenVectors(vector1, vector2);
           // console.log("rotateAngle :>> ", rotateAngle);
 
-          if ( >= 10) {
+          if (rotateAngle >= 10) {
             const A: Point = {x: x1, y: y1};
             const B: Point = {x: x2, y: y2};
             const C: Point = {x: x3, y: y3};
