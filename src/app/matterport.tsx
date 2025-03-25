@@ -159,9 +159,9 @@ export default function MatterportPage() {
           // console.log("rotateAngle :>> ", rotateAngle);
 
           if (rotateAngle >= 10) {
-            const A: Point = {x: x1, y: y1};
-            const B: Point = {x: x2, y: y2};
-            const C: Point = {x: x3, y: y3};
+            const A: Point = {x: x1, y: z1};
+            const B: Point = {x: x2, y: z2};
+            const C: Point = {x: x3, y: z3};
             const rotateDirection = getTurnDirection(A, B, C);
             // console.log("rotateDirection :>> ", rotateDirection);
 
