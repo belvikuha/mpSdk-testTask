@@ -99,6 +99,16 @@ export default function MatterportPage() {
     return angle;
   }
 
+  type Point = {x: number; y: number};
+
+  function getTurnDirection(C: Point, P1: Point, P2: Point): number {
+    const crossProduct = (P1.x - C.x) * (P2.y - C.y) - (P1.y - C.y) * (P2.x - C.x);
+
+    if (crossProduct > 0) return 1; // Левый поворот
+    if (crossProduct < 0) return -1; // Правый поворот
+    return 0; // Точки лежат на одной прямой
+  }
+
   const addTag = async anchorPosition => {
     try {
       await mpSdk.Tag.add({
@@ -148,11 +158,14 @@ export default function MatterportPage() {
           const rotateAngle = angleBetweenVectors(vector1, vector2);
           // console.log("rotateAngle :>> ", rotateAngle);
 
-          if (rotateAngle >= 10) {
-            const rotateDirection = z3 > z1 ? -rotateAngle : rotateAngle;
+          if ( >= 10) {
+            const A: Point = {x: x1, y: y1};
+            const B: Point = {x: x2, y: y2};
+            const C: Point = {x: x3, y: y3};
+            const rotateDirection = getTurnDirection(A, B, C);
             // console.log("rotateDirection :>> ", rotateDirection);
 
-            await mpSdk.Camera.rotate(rotateDirection, 0, {speed: 50});
+            await mpSdk.Camera.rotate(rotateDirection * rotateAngle, 0, {speed: 50});
           }
         }
       } catch (moveErr) {
